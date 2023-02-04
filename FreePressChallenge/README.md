@@ -25,7 +25,7 @@ The idea is to proof the concept, consolidade ideas, warm up the team and create
 
 
 ## How it is organized
-We devided the POC in two parts:
+We divided the POC into two parts:
 
 * Simulation: a code that simulates contract creation, execution and dispute on Bitcoin regtest. The idea is to show the technical feasibility, communicate what we are trying to accomplish, train the team, and create code to be reused.
 * UX/UI prototype: an idea of user interface for the PLS
