@@ -1,0 +1,40 @@
+@startuml
+== personal wallets setup ==
+
+note right of @arbitrator: tpub: xpub from sparrow
+
+@arbitrator->wallet_arb: creates a personal wallet
+@privcomp->wallet_priv: creates a personal wallet and gets tpub@wallet_priv
+@libwriter->wallet_lib: creates a personal wallet and gets tpub@wallet_lib
+
+note right of @privcomp: both user's private wallets should have funds (via faucet)
+
+== wallets info exchange ==
+
+@privcomp<->@libwriter: Negotiate/create/exchange contract file
+@privcomp<->@libwriter: exchange tpubs (tpub@wallet_priv and tpub@wallet_lib)
+@arbitrator->@privcomp: sends address0@wallet_arb
+@arbitrator->@libwriter: sends address0@wallet_arb
+
+== multisig escrow wallet setup ==
+
+note left of wallet_contract_priv: wallet_contract are the multisig 2-of-2
+
+@privcomp->wallet_contract_priv: creates contract's multisig with his own key and tpub@wallet_lib
+@libwriter->wallet_contract_lib: creates contract's multisig with his own key and tpub@wallet_priv
+
+== security deposits ==
+
+@privcomp->wallet_contract_priv: makes security deposit from wallet_contract_priv to address0@wallet_contract
+@libwriter->wallet_contract_lib: makes security deposit from wallet_contract_lib to address1@wallet_contract
+
+== escrow to arbitrator transaction creation ==
+
+note right of @privcomp: timelocked transaction sending all wallet_contract's funds to address0@wallet_arb
+@privcomp->wallet_contract_priv: creates a transaction
+@privcomp->wallet_contract_priv: signs transaction with privcomp key
+@privcomp->@libwriter: sends partially signed transaction (PSBT)
+@libwriter->wallet_contract_lib: signs PSBT with libwriter key
+@libwriter->@privcomp: sends back fully signed transaction
+note right of @privcomp: now both parties have the signed transaction. After the timelock period, anyone can broadcast to the bitcoin network to start the arbitration process.
+@enduml

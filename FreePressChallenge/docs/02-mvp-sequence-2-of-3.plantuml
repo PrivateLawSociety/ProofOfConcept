@@ -1,0 +1,31 @@
+@startuml PLS v0.1 - MnVP - peers without the network - 2-of-3
+
+== personal wallets setup ==
+
+note right of @arbitrator: tpub: xpub from sparrow
+
+@arbitrator->wallet_arb: creates a personal wallet and gets tpub@wallet_arb
+@privcomp->wallet_priv: creates a personal wallet and gets tpub@wallet_priv
+@libwriter->wallet_lib: creates a personal wallet and gets tpub@wallet_lib
+
+note right of @privcomp: user's private wallets - DO NOT NEED - to have funds
+
+== wallets info exchange ==
+
+@privcomp<->@libwriter: Negotiate/create/exchange contract file
+@privcomp<->@libwriter: exchange tpubs (tpub@wallet_priv and tpub@wallet_lib)
+@arbitrator->@privcomp: sends tpub@wallet_arb
+@arbitrator->@libwriter: sends tpub@wallet_arb
+
+== multisig escrow wallet setup ==
+
+note right of @privcomp: wallet_contract are the multisig 2-of-3 \nno need of a timelocked transaction, arbitrator and winner can sign
+
+@privcomp->wallet_contract_priv: creates contract's multisig with 3 keys
+@libwriter->wallet_contract_lib: creates contract's multisig with 3 keys
+
+== security deposits ==
+
+@privcomp->wallet_contract_priv: makes security deposit from - ANY WALLET - to address0@wallet_contract
+@libwriter->wallet_contract_lib: makes security deposit from - ANY WALLET - to address1@wallet_contract
+@enduml

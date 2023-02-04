@@ -1,0 +1,12 @@
+@startuml
+
+[*] --> Created : One party creates contract at PLS
+Created --> Configured : Configure parameters\nand select arbitrator
+Configured --> Validated : Other party\nvalidate and\ncomplement parameters
+Validated --> Initiated 
+Initiated --> Finished_OK
+Initiated --> Finished_Dispute
+Finished_OK --> [*]
+Finished_Dispute --> [*]
+
+@enduml

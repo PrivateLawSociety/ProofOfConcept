@@ -1,0 +1,37 @@
+@startuml
+
+actor libwriter
+entity PLS_libwriter
+entity PLS_privcomp
+actor privcomp
+
+== Negotiations ==
+libwriter <--> privcomp : Negotiate and create contractfile.pdf
+== 1-Create Contract == 
+libwriter -> PLS_libwriter : Start contract criation
+libwriter -> PLS_libwriter : Configure contract parameters
+libwriter -> PLS_libwriter : Select Arbitator and Mediator
+libwriter -> PLS_libwriter : Process contractfile.pdf\nand generate hash
+PLS_libwriter -> PLS_libwriter : Generate contract.json (Created)
+libwriter -> PLS_libwriter : Submit contract
+PLS_libwriter -> PLS_privcomp : Send contract.json (Configured)
+privcomp -> PLS_privcomp : Procress contractfile.pdf\nand validade hash
+privcomp -> PLS_privcomp : Validade parameters\n(including choosen\nArbitrator and Mediator)\nand provide his key
+privcomp -> PLS_privcomp : Accept contract
+PLS_privcomp -> PLS_libwriter : Send contract.json (Validated)
+
+== 2-Start the contract ==
+libwriter -> PLS_libwriter : Start the contract
+PLS_libwriter -> PLS_libwriter : Create contract wallet (multisig)
+PLS_libwriter -> PLS_privcomp : Ask for funding
+PLS_privcomp -> PLS_privcomp : Fund contract wallet
+PLS_privcomp --> PLS_libwriter : OK
+PLS_libwriter -> PLS_libwriter : Fund contract wallet
+PLS_libwriter -> PLS_libwriter : Create dispute transaction
+PLS_libwriter -> PLS_privcomp : Send dispute transaction to privcomp
+
+== 3-Start arbitration ==
+libwriter -> PLS_libwriter : Start arbitration
+PLS_libwriter -> PLS_libwriter : Broadcast dispute transaction
+
+@enduml
