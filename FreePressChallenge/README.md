@@ -3,6 +3,7 @@
 - [The Free Speech Challenge - Private Law Society Proof Of Concept](#the-free-speech-challenge---private-law-society-proof-of-concept)
   - [Introduction](#introduction)
   - [How it is organized](#how-it-is-organized)
+  - [UX/UI](#uxui)
   - [Simulation](#simulation)
     - [Installation](#installation)
     - [How to run](#how-to-run)
@@ -27,8 +28,15 @@ The idea is to proof the concept, consolidade ideas, warm up the team and create
 ## How it is organized
 We divided the POC into two parts:
 
-* Simulation: a code that simulates contract creation, execution and dispute on Bitcoin regtest. The idea is to show the technical feasibility, communicate what we are trying to accomplish, train the team, and create code to be reused.
 * UX/UI prototype: an idea of user interface for the PLS
+
+* Simulation: a code that simulates contract creation, execution and dispute on Bitcoin regtest. The idea is to show the technical feasibility, communicate what we are trying to accomplish, train the team, and create code to be reused.
+
+## UX/UI
+The figure below depicts the main use cases to be covered by the Proof Of Concept UI:
+![](docs/DiagramaUseCase.png)
+
+
 
 ## Simulation
 ### Installation

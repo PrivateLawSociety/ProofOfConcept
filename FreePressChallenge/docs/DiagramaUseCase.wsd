@@ -1,0 +1,66 @@
+@startuml 
+skinparam actorStyle awesome
+left to right direction
+    actor User
+    actor "Party A" as A
+    actor "Party B" as B
+    actor "Mediator" as Mediator 
+    actor "Claiment" as Claiment 
+    actor "Defendant" as Defendant 
+    actor "Committee" as Committee
+    actor "DAO\n<<Group>>" as Dao #lightgray;line:gray;text:black;
+    actor "Arbitrator" as Arbitrator 
+    actor  "Contract File PDF\n<<Binary file>>" as PDF #lightgray;line:gray;text:black;
+
+    Committee *- "n" Arbitrator
+    User <|--- Arbitrator
+    User <|--- A
+    User <|--- B
+    User <|--- Claiment
+    User <|--- Defendant
+    User <|--- Mediator
+    Dao o--- "n" Committee
+
+' FIST STAGE
+package Contract {
+    PDF -D-> (Generate Hash)
+    A -> (Create Contract)
+    (Generate Hash) --* (Create Contract)  
+    ' (Choose Arbitration) --* (Create Contract)
+    (Create Contract) *-- (Choose Arbitration)
+    A --> (Include Party B)
+    B --> (validate Contract)
+    (validate Contract) --* (Create Contract)
+
+    Committee -> (Randomly select\ncommittee)
+
+    (Finalize Contract) -- A
+
+    
+    'note "Party B is notified" as n1
+    '(Include Party B)-down. n1
+     
+    ' FUNDING
+    A --> (Deposit Collateral)
+    B --> (Deposit Collateral)
+        
+}
+
+'CONFLICT
+package Conflict {
+    Committee --> (Pay Arbitrator)
+    Arbitrator --> (Pay Arbitrator)
+    Mediator --> (Mediation)
+    Claiment --> (Mediation)
+    Defendant --> (Mediation)
+    Claiment --> (Open Arbitration)
+    Defendant --> (Accept/Deny\n Settlement)
+    Arbitrator --> (Report a case)
+    Arbitrator -> (Arbitrates)
+    Dao --> (Report a case)
+    
+    (Open Arbitration) -- (Arbitrates)
+    (Arbitrates) -- (Accept/Deny\n Settlement)
+}
+
+@enduml
