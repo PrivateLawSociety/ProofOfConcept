@@ -84,9 +84,11 @@ Part A: setting up the environment
  
  
 Part B: Negociations (happens outside PLS)
- * Libwriter and Privcomp negotiate and write a contract-file (PDF) 
+ * Libwriter and Privcomp negotiate and write a contract file (PDF) 
  
 ```
+This is the [contract-file](docs/ContractFile.pdf).
+
 
 #### 1-Contract creation
 Any party, let's say libwriter, go to PLS App to create the contract. In the PLS UI the libwriter create the contract. He must:
