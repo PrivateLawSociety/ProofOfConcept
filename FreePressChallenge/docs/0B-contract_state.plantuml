@@ -1,12 +1,68 @@
 @startuml
 
-[*] --> Created : One party creates contract at PLS
-Created --> Configured : Configure parameters\nand select arbitrator
-Configured --> Validated : Other party\nvalidate and\ncomplement parameters
-Validated --> Initiated 
-Initiated --> Finished_OK
-Initiated --> Finished_Dispute
+state c <<choice>>
+state c2 <<choice>>
+
+Under_creation: Show UI to fill\nin contact details
+Transmitting_to_counterpart: Transmit contract json and\nshow feedback to user\nand a button to cancel
+Counterpart_received: Notify that a\nnew contract arrived\nand provide option to edit or cancel
+Notify_cancelation: Send cancelation message
+Counterpart_adjusting: Show UI to edit\ncontract details
+Transmitting_to_creator: Transmit contract\njson and show\nfeedback to user
+Validated: Notify creator and ask for final validation.\nTwo options "Start", "Edit"
+Wait_for_funds: Notify progress to users
+Returning_collateral: Notify progress to users
+Finishing: Show dialog\nto counterpart\nrequesting confirmation
+In_progress: Provide 2 options:\n*Request mediation\n*Finish
+In_Mediation: Notify mediator and\nthey will chat\nEnable "Request arbitration"
+In_Arbitration: Notify arbitrator and\nthey will chat
+Sending_collateral_to_DAO: Publish transaction\nto move funds to DAO
+Waiting_DAO_Votes: Define DAO-arbitrators;\nnotify them;\nwait for their vote.
+Paying_Arbitrator: Publish transaction\nto pay Arbitrator
+Returning_collateral_full: Publish transaction\nthat returns collateral
+
+[*] -> Under_creation : One party creates\ncontract at PLS (Press "+")
+Under_creation --> Under_creation : User fill the contract details,\nselect arbitration,\nupload contract-file,\n etc
+Under_creation --> Finished_Canceled : Press "Cancel"\non contract creation\nscreen
+Finished_Canceled --> [*]
+Under_creation --> Transmitting_to_counterpart : Press\n"Send to counterpart\nfor validation"
+Transmitting_to_counterpart --> Transmitting_to_counterpart : Wait\nacknowledge
+Transmitting_to_counterpart --> Finished_Canceled: Press "Cancel"
+Transmitting_to_counterpart --> Counterpart_received : Counterpart PLS node\nreceived\nand acknowledge
+Counterpart_received --> Counterpart_adjusting : Counterpart press "Edit"
+Counterpart_received --> Notify_cancelation : Counterpart\npress "Cancel"
+Notify_cancelation --> Finished_Canceled : Contract creator node\nack cancelation message
+Counterpart_adjusting --> Counterpart_adjusting : Modify whatever\nnecessary
+Counterpart_adjusting --> Transmitting_to_creator : Press "Finish"
+Transmitting_to_creator --> Transmitting_to_creator : Wait\nacknowledge
+Transmitting_to_creator --> Validated : Creator node receives\nthe modified\nversion of the\ncontract\nand ack
+Validated --> Under_creation : Do not accept terms\nPress "Edit"
+Validated --> Wait_for_funds : Accept terms\nPress "Start"
+Wait_for_funds --> Wait_for_funds : Funds are not\nin the wallet
+Wait_for_funds --> In_progress : Funds are\nin the wallet
+Wait_for_funds --> c : Press "cancel"
+c --> Returning_collateral : [There are funds\nto return]\nPublish transaction
+c --> Finished_Canceled : [No funds\nto return]
+Returning_collateral --> Returning_collateral : Transaction\nnot confirmed
+Returning_collateral --> Finished_Canceled : Transation confirmed
+In_progress --> In_Mediation : Press\n"Request mediation"
+In_Mediation --> In_progress : Any party\ncancel mediation
+In_Mediation --> In_Arbitration : Any party press\n"Request arbitration"
+In_Arbitration --> In_progress : Any party\ncancel arbitration
+In_Arbitration --> Sending_collateral_to_DAO : Arbitrator press\n"Finish" and\npublish transaction
+Sending_collateral_to_DAO --> Waiting_DAO_Votes : Transaction confirmed
+In_progress --> Finishing : Any party\npress "Finish"
+Finishing --> In_progress : Counterpart\npress\n"Do not Finish"\nor timeout
+Finishing --> Returning_collateral_full : Counterpart press\n"OK Finish"
+Returning_collateral_full --> Finished_OK : Transaction\nconfimed
 Finished_OK --> [*]
-Finished_Dispute --> [*]
+
+Waiting_DAO_Votes --> c2 : 3 votes
+c2 --> Paying_Arbitrator : [>2 votes\nto pay]
+Paying_Arbitrator --> Finished_Dispute_Arbitrator_Payed : Transaction\nconfirmed
+c2 --> Finished_Dispute_Arbitrator_Not_Payed : [>2 votes\nto not pay]
+
+Finished_Dispute_Arbitrator_Payed --> [*]
+Finished_Dispute_Arbitrator_Not_Payed --> [*]
 
 @enduml
