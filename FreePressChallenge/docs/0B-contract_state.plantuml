@@ -1,25 +1,68 @@
 @startuml
 
-state c <<choice>>
 state c2 <<choice>>
 
-Under_creation: Show UI to fill\nin contact details
-Transmitting_to_counterpart: Transmit contract json and\nshow feedback to user\nand a button to cancel
-Counterpart_received: Notify that a\nnew contract arrived\nand provide option to edit or cancel
+state Under_creation as "P1=Under_creation\nP2=[]"
+state Adjust_contract as "P1=Adjust_contract\nP2=Validated"
+state Transmitting_to_counterpart as "P1=Transmitting_to_counterpart\nP2=[]"
+state Transmitting_to_counterpart2 as "P1=Transmitting_to_counterpart2\nP2=Validated"
+state Counterpart_received as "P1=Counterpart_received\nP2=Counterpart_received"
+state Counterpart_adjusting as "P1=Counterpart_received\nP2=Counterpart_adjusting"
+state Transmitting_to_creator as "P1=Counterpart_received\nP2=Transmitting_to_creator"
+state Validated as "P1=Validated\nP2=Validated"
+state Starting as "P1=Starting\nP2=Validated"
+state Notify_cancelation as "P1=Counterpart_received\nP2=Notify_cancelation"
+state Finished_Canceled as "P1=Finished_Canceled\nP2=Finished_Canceled"
+state Wait_for_funds as "P1=Wait_for_funds\nP2=Wait_for_funds"
+state Notify_cancelation_B as "Pa=Notify_cancelation\nPb=?"
+state Returning_collateral as "Pa=Returning_collateral\nPb=Returning_collateral"
+state PartA_Funds as "Pa=PartA_Deposited\nPb=?"
+state In_progress as "P1=In_progress\nP2=In_progress"
+state Notifying_mediation as "P1=Notifying_mediation\nP2=In_progress"
+state Waiting_for_mediator as "P1=Notifying_mediation\nP2=Notifying_mediation"
+state In_Mediation as "P1=In_Mediation\nP2=In_Mediation\nMd=In_Mediation"
+state Canceling_Mediation as "Pa=Canceling_mediation\nPb=In_mediation\nMd=In_mediation"
+state Notify_arbitration as "Pa=Notifying_arbitration\nPb=In_mediation\nMd=In_mediation"
+state In_Arbitration as "P1=In_Arbitration\nP2=In_Arbitration\nARB=In_Arbitration"
+state Notifying_Committee as "P1=In_Arbitration\nP2=In_Arbitration\nARB=Notifying_Committee\nCMTn=[]"
+state Waiting_DAO_Votes as "P1=Waiting_CMT_Votes\nP2=Waiting_CMT_Votes\nARB=Waiting_CMT_Votes\nCMTn=Voting"
+state Transmitting_vote as "P1=Waiting_CMT_Votes\nP2=Waiting_CMT_Votes\nARB=Waiting_CMT_Votes\nCMTn=Transmitting_vote"
+state Voted_waiting as "P1=Waiting_CMT_Votes\nP2=Waiting_CMT_Votes\nARB=Waiting_CMT_Votes\nCMTn=Voted_waiting"
+state Paying_Arbitrator as "P1=Paying_Arbitrator\nP2=Paying_Arbitrator\nARB=Paying_Arbitrator\nCMTn=Paying_Arbitrator"
+state Finished_Dispute_Arbitrator_Payed as "P1=Finished_Dispute_Arbitrator_Payed\nP2=Finished_Dispute_Arbitrator_Payed\nARB=Finished_Dispute_Arbitrator_Payed\nCMTn=Finished_Dispute_Arbitrator_Payed"
+state Finished_Dispute_Arbitrator_Not_Payed as "P1=Finished_Dispute_Arbitrator_Not_Payed\nP2=Finished_Dispute_Arbitrator_Not_Payed\nARB=Finished_Dispute_Arbitrator_Not_Payed\nCMTn=Finished_Dispute_Arbitrator_Not_Payed"
+
+Under_creation: *Show UI to fill\nin contract details.\n*Provide buttons \n"Send to counterpart\nfor validation"\nand "Cancel"
+Transmitting_to_counterpart: Transmit contract json and\nUI show feedback to user\nand a button to Cancel
+Counterpart_received: UI notifies that a\nnew contract arrived\nand provide option\nto Edit or Cancel
 Notify_cancelation: Send cancelation message
-Counterpart_adjusting: Show UI to edit\ncontract details
+Counterpart_adjusting: Show UI to edit\ncontract details\nwith "Finish" button
 Transmitting_to_creator: Transmit contract\njson and show\nfeedback to user
-Validated: Notify creator and ask for final validation.\nTwo options "Start", "Edit"
-Wait_for_funds: Notify progress to users
-Returning_collateral: Notify progress to users
+Validated: UI notifies creator and asks\nfor final validation.\nTwo options "Start", "Edit"
+Adjust_contract: Show UI to fill\nin contract details\nand button "Send to\ncounterpart for validation"
+Transmitting_to_counterpart2: Transmit contract json and\nshow feedback to user
+Starting: Notify counterpart node\nthat the contract\nhas been started
+Wait_for_funds: UI notifies progress to users
+Returning_collateral: Publish transaction\nto return collateral
 Finishing: Show dialog\nto counterpart\nrequesting confirmation
-In_progress: Provide 2 options:\n*Request mediation\n*Finish
-In_Mediation: Notify mediator and\nthey will chat\nEnable "Request arbitration"
-In_Arbitration: Notify arbitrator and\nthey will chat
-Sending_collateral_to_DAO: Publish transaction\nto move funds to DAO
-Waiting_DAO_Votes: Define DAO-arbitrators;\nnotify them;\nwait for their vote.
-Paying_Arbitrator: Publish transaction\nto pay Arbitrator
+In_progress: UI provides 2 options:\n*Request mediation\n*Finish
+In_Mediation: They will chat on UI\nEnable "Request arbitration" on UI
+
+Notify_arbitration: * Publish transaction\nto move funds to DAO\n* Notify counterpart and Mediator\n* Send contract json to Arbitrator\n* Wait for ACK
+
+In_Arbitration: *They will chat\n*Arbitrator decides\n*Arbitrator pays one party\n*Arbitrator writes a report\n*Arbitrator node randomly selects Committee
+Notifying_Committee: *Send contract json\nand report to committee\nand all parties
+
+Waiting_DAO_Votes: *Show report to committee member\n*Give two options:\n**Pay\n**Not Pay\n*Provide UI for vote justification
+Transmitting_vote: *If vote is "Pay" signs transaction and\ninclude signed transaction on vote json\n*Broadcasts vote json\nto all nodes
+
+Paying_Arbitrator: *Arbitrator node\npublishes transaction\nto pay Arbitrator\n(signed by at least 2 of 3)
 Returning_collateral_full: Publish transaction\nthat returns collateral
+Notifying_mediation: Send "start mediation" message to counterpart
+Waiting_for_mediator: Randomly select mediator\nSend contract json to Mediator\nWait for ack
+Canceling_Mediation: Send "mediation cancellation"\nmessage to counterpart\nand mediator
+
+Notify_cancelation_B: Send cancelation\nmessage to B
 
 [*] -> Under_creation : One party creates\ncontract at PLS (Press "+")
 Under_creation --> Under_creation : User fill the contract details,\nselect arbitration,\nupload contract-file,\n etc
@@ -36,28 +79,50 @@ Counterpart_adjusting --> Counterpart_adjusting : Modify whatever\nnecessary
 Counterpart_adjusting --> Transmitting_to_creator : Press "Finish"
 Transmitting_to_creator --> Transmitting_to_creator : Wait\nacknowledge
 Transmitting_to_creator --> Validated : Creator node receives\nthe modified\nversion of the\ncontract\nand ack
-Validated --> Under_creation : Do not accept terms\nPress "Edit"
-Validated --> Wait_for_funds : Accept terms\nPress "Start"
+
+Validated --> Adjust_contract : Do not accept terms\nPress "Edit"
+Adjust_contract --> Transmitting_to_counterpart2: Press "Send to counterpart\nfor validation"
+Transmitting_to_counterpart2 --> Counterpart_received : Counterpart PLS node\nreceived\nand acknowledge
+Transmitting_to_counterpart2 --> Transmitting_to_counterpart2: Wait\nacknowledge
+
+Validated --> Starting : Accept terms\nPress "Start"
+Starting --> Wait_for_funds : Received acklownledge\nfrom counterpart node
+
 Wait_for_funds --> Wait_for_funds : Funds are not\nin the wallet
-Wait_for_funds --> In_progress : Funds are\nin the wallet
-Wait_for_funds --> c : Press "cancel"
-c --> Returning_collateral : [There are funds\nto return]\nPublish transaction
-c --> Finished_Canceled : [No funds\nto return]
-Returning_collateral --> Returning_collateral : Transaction\nnot confirmed
+
+Wait_for_funds --> PartA_Funds: Funds from\nA confirmed
+PartA_Funds --> In_progress: Funds from\nA and B confirmed
+
+Wait_for_funds --> Notify_cancelation_B : Part A Press "cancel"
+Notify_cancelation_B --> Finished_Canceled : Part B ack and\nnot funds from\nA confirmed
+Notify_cancelation_B --> Returning_collateral : Funds from\nB confirmed and\nacknowledge from B
+
 Returning_collateral --> Finished_Canceled : Transation confirmed
-In_progress --> In_Mediation : Press\n"Request mediation"
+In_progress --> Notifying_mediation : Press\n"Request mediation"
+
+Notifying_mediation --> Waiting_for_mediator : Counterpart acks
+Waiting_for_mediator --> In_Mediation: Mediator acks\nto both parties
+
 In_Mediation --> In_progress : Any party\ncancel mediation
-In_Mediation --> In_Arbitration : Any party press\n"Request arbitration"
-In_Arbitration --> In_progress : Any party\ncancel arbitration
-In_Arbitration --> Sending_collateral_to_DAO : Arbitrator press\n"Finish" and\npublish transaction
-Sending_collateral_to_DAO --> Waiting_DAO_Votes : Transaction confirmed
+In_Mediation --> Notify_arbitration: Any party press\n"Request arbitration"
+Notify_arbitration --> In_Arbitration: Counterpart and Mediator\nnodes send ACK\nand transaction\nconfirmed
+
+In_Mediation --> Canceling_Mediation: Any party press\n"Stop Mediation"
+Canceling_Mediation --> In_progress: Received ack from\ncounterpart\nand Mediator
+
+In_Arbitration --> Notifying_Committee: Arbitrator press\n"Finish"
+Notifying_Committee --> Waiting_DAO_Votes : All committee\nand parties\nACK
+
 In_progress --> Finishing : Any party\npress "Finish"
 Finishing --> In_progress : Counterpart\npress\n"Do not Finish"\nor timeout
 Finishing --> Returning_collateral_full : Counterpart press\n"OK Finish"
 Returning_collateral_full --> Finished_OK : Transaction\nconfimed
 Finished_OK --> [*]
 
-Waiting_DAO_Votes --> c2 : 3 votes
+Waiting_DAO_Votes --> Transmitting_vote : Vote
+Transmitting_vote --> c2: Received ACK from all nodes
+Voted_waiting --> c2: Received another\nvote json
+c2 --> Voted_waiting: [<2 votes total]
 c2 --> Paying_Arbitrator : [>2 votes\nto pay]
 Paying_Arbitrator --> Finished_Dispute_Arbitrator_Payed : Transaction\nconfirmed
 c2 --> Finished_Dispute_Arbitrator_Not_Payed : [>2 votes\nto not pay]
