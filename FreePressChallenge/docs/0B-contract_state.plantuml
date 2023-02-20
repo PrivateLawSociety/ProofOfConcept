@@ -98,7 +98,7 @@ Notify_cancelation_B --> Finished_Canceled : Part B ack and\nnot funds from\nA c
 Notify_cancelation_B --> Returning_collateral : Funds from\nB confirmed and\nacknowledge from B
 
 Returning_collateral --> Finished_Canceled : Transation confirmed
-In_progress --> Notifying_mediation : Press\n"Request mediation"
+In_progress -L-> Notifying_mediation : Press\n"Request mediation"
 
 Notifying_mediation --> Waiting_for_mediator : Counterpart acks
 Waiting_for_mediator --> In_Mediation: Mediator acks\nto both parties
