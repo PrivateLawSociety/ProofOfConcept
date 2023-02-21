@@ -24,7 +24,7 @@ state In_Mediation as "P1=In_Mediation\nP2=In_Mediation\nMd=In_Mediation"
 state Canceling_Mediation as "Pa=Canceling_mediation\nPb=In_mediation\nMd=In_mediation"
 state Notify_arbitration as "Pa=Notifying_arbitration\nPb=In_mediation\nMd=In_mediation"
 state In_Arbitration as "P1=In_Arbitration\nP2=In_Arbitration\nARB=In_Arbitration"
-state Notifying_Committee as "P1=In_Arbitration\nP2=In_Arbitration\nARB=Notifying_Committee\nCMTn=[]"
+state Notifying_chamber as "P1=In_Arbitration\nP2=In_Arbitration\nARB=Notifying_chamber\nCMTn=[]"
 state Waiting_DAO_Votes as "P1=Waiting_CMT_Votes\nP2=Waiting_CMT_Votes\nARB=Waiting_CMT_Votes\nCMTn=Voting"
 state Transmitting_vote as "P1=Waiting_CMT_Votes\nP2=Waiting_CMT_Votes\nARB=Waiting_CMT_Votes\nCMTn=Transmitting_vote"
 state Voted_waiting as "P1=Waiting_CMT_Votes\nP2=Waiting_CMT_Votes\nARB=Waiting_CMT_Votes\nCMTn=Voted_waiting"
@@ -46,14 +46,14 @@ Wait_for_funds: UI notifies progress to users
 Returning_collateral: Publish transaction\nto return collateral
 Finishing: Show dialog\nto counterpart\nrequesting confirmation
 In_progress: UI provides 2 options:\n*Request mediation\n*Finish
-In_Mediation: They will chat on UI\nEnable "Request arbitration" on UI
+In_Mediation: They will chat on UI
 
 Notify_arbitration: * Publish transaction\nto move funds to DAO\n* Notify counterpart and Mediator\n* Send contract json to Arbitrator\n* Wait for ACK
 
-In_Arbitration: *They will chat\n*Arbitrator decides\n*Arbitrator pays one party\n*Arbitrator writes a report\n*Arbitrator node randomly selects Committee
-Notifying_Committee: *Send contract json\nand report to committee\nand all parties
+In_Arbitration: *They will chat\n*Arbitrator decides\n*Arbitrator pays one party\n*Arbitrator writes a report\n*Arbitrator node randomly selects Chamber
+Notifying_chamber: *Send contract json\nand report to chamber\nand all parties
 
-Waiting_DAO_Votes: *Show report to committee member\n*Give two options:\n**Pay\n**Not Pay\n*Provide UI for vote justification
+Waiting_DAO_Votes: *Show report to chamber member\n*Give two options:\n**Pay\n**Not Pay\n*Provide UI for vote justification
 Transmitting_vote: *If vote is "Pay" signs transaction and\ninclude signed transaction on vote json\n*Broadcasts vote json\nto all nodes
 
 Paying_Arbitrator: *Arbitrator node\npublishes transaction\nto pay Arbitrator\n(signed by at least 2 of 3)
@@ -103,15 +103,15 @@ In_progress -L-> Notifying_mediation : Press\n"Request mediation"
 Notifying_mediation --> Waiting_for_mediator : Counterpart acks
 Waiting_for_mediator --> In_Mediation: Mediator acks\nto both parties
 
-In_Mediation --> In_progress : Any party\ncancel mediation
-In_Mediation --> Notify_arbitration: Any party press\n"Request arbitration"
+In_Mediation --> In_progress : Requester\ncancels mediation
+In_Mediation --> Notify_arbitration: Mediation timeout
 Notify_arbitration --> In_Arbitration: Counterpart and Mediator\nnodes send ACK\nand transaction\nconfirmed
 
 In_Mediation --> Canceling_Mediation: Any party press\n"Stop Mediation"
 Canceling_Mediation --> In_progress: Received ack from\ncounterpart\nand Mediator
 
-In_Arbitration --> Notifying_Committee: Arbitrator press\n"Finish"
-Notifying_Committee --> Waiting_DAO_Votes : All committee\nand parties\nACK
+In_Arbitration --> Notifying_chamber: Arbitrator press\n"Finish"
+Notifying_chamber --> Waiting_DAO_Votes : All chamber\nand parties\nACK
 
 In_progress --> Finishing : Any party\npress "Finish"
 Finishing --> In_progress : Counterpart\npress\n"Do not Finish"\nor timeout
